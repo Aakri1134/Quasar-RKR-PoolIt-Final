@@ -3,11 +3,11 @@ import { Button, Text, TextInput, View } from 'react-native';
 import { Linking } from 'react-native';
 
 const SOSApp = () => {
-  const [emergencyNumber, setEmergencyNumber] = useState('9113156691');
+  const [emergencyNumber, setEmergencyNumber] = useState('112');
   const [sosMessage, setSOSMessage] = useState('Help! I am in an emergency.');
 
   const handleSOSPress = () => {
-    const url ='tel:${emergencyNumber}' ; // Format for phone call
+    const url =`tel:${emergencyNumber}` ; // Format for phone call
     Linking.openURL(url); // Attempt to call emergency number
     alert(sosMessage); // Display SOS message
   };

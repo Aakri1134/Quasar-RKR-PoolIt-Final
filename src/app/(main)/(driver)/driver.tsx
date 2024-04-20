@@ -13,11 +13,7 @@ import StartRide from "@/src/components/StartRide";
 import NearbyPassengers from "@/src/components/NearbyPassengers";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet from "@gorhom/bottom-sheet";
-<<<<<<< HEAD
-import SOSActivity from "@/src/components/sos";
-=======
-import Sos from "@/src/components/Sos";
->>>>>>> 2fa456833f95a64600f22dc948d5faafd87e9029
+import Sos from "@/src/components/sos";
 
 export default function DriverScreen() {
   const [state, setState] = useState({
@@ -117,6 +113,7 @@ export default function DriverScreen() {
   }
   function hasStoppedRidefun() {
     setHasStartedRide(false);
+    
   }
 
   return (
@@ -126,26 +123,6 @@ export default function DriverScreen() {
         longitude={state.destinationCords.longitude}
       />
       <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
-<<<<<<< HEAD
-      <ScrollView
-        style={{ backgroundColor: "white", flex: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        {!hasStartedRide && (
-          <StartRide
-            fetchDestination={fetchDestination}
-            hasStartedRidefun={hasStartedRidefun}
-          />
-        )}
-        {hasStartedRide && (
-          <NearbyPassengers
-            hasStoppedRidefun={hasStoppedRidefun}
-            destinationCoords={state.destinationCords}
-          />
-        )}
-      </ScrollView>
-        <SOSActivity/>
-=======
         <ScrollView
           style={{ backgroundColor: "white", flex: 1 }}
           keyboardShouldPersistTaps="handled"
@@ -175,7 +152,6 @@ export default function DriverScreen() {
           )}
           <Sos />
         </ScrollView>
->>>>>>> 2fa456833f95a64600f22dc948d5faafd87e9029
       </BottomSheet>
     </GestureHandlerRootView>
   );

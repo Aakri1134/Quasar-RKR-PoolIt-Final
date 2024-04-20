@@ -94,14 +94,16 @@ export default function DriverMap(props) {
   useEffect(() => {
     const interval = setInterval(async () => {
       getCurrentLocation();
+      fetchPassengers();
       console.log(1);
     }, 4000);
     return () => clearInterval(interval);
   });
 
   async function fetchPassengers() {
+    console.log("pp");
     await axios
-      .post("http://192.168.56.226:3000/getpassenger/", {
+      .post("http://192.168.29.196:3000/getpassenger/", {
         latitude: state.currentLocation.latitude,
         longitude: state.currentLocation.longitude,
         lat: props.latitude,
