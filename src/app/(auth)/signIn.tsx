@@ -11,7 +11,8 @@ import {
   Alert,
   Button,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
 
 } from "react-native";
 
@@ -19,11 +20,15 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import auth from "@react-native-firebase/auth";
 import { Link } from "expo-router";
 import axios from "axios";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function Login () {
   const [email, setEmail] = useState<string | undefined>();
   const [password, setPassword] = useState<string | undefined>();
   const [show,setshow] = useState(false);
+  const [shows,setshows] = useState(false);
+
+  const [visible,setvisible] = useState(false);
 
   const nav = useNavigation<NativeStackNavigationProp<any>>();
 
@@ -38,12 +43,12 @@ export default function Login () {
             )
 
             if(response.user){
-                setshow(true);
+                setshows(true);
                 setTimeout(()=>{
-                    ``
+                    
                 nav.replace("(tabs)");
 
-                 setshow(false);
+                 setshows(false);
                 },3000);
             }
 
@@ -65,24 +70,32 @@ export default function Login () {
       <SafeAreaView style={styles.contentView}>
         <View style={styles.container}>
           <View>
+
+          <View  style={styles.loginTextField}>
             <TextInput
-              style={styles.loginTextField}
+              style={styles.inputbox}
               placeholder="Email"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
               inputMode="email"
             />
-            <TextInput
-              style={styles.loginTextField}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
+            </View>
+            <View style={styles.loginTextField}>
+                <TextInput style={styles.inputbox}
+                   placeholder="Password"
+                   value={password}
+                   onChangeText={setPassword}
+                   secureTextEntry={visible}
+                 />
+                 <TouchableOpacity onPress={()=>{setshow(!show) ,setvisible(!visible)}}>
+                  <MaterialCommunityIcons name={show===false? 'eye':'eye-off'} size={25} color={'#3C5B6F'} style={styles.eyesvg}/>
+                 </TouchableOpacity>
+            </View >
+            
+            </View>
           <Pressable onPress={goToMainFlow} style={styles.signInButton}><Text style={styles.signInText}>Sign in</Text></Pressable>
-          <ActivityIndicator size={"large"} color={"#77B0AA"} animating={show} >
+          <ActivityIndicator size={"large"} color={"#3C5B6F"} animating={shows} >
             </ActivityIndicator>
           <Link href={'/signUp'} >
             <Text style={styles.linkText}>No Account? SignUp Here</Text>
@@ -131,12 +144,23 @@ const styles = StyleSheet.create({
   },
  
   loginTextField: {
+    flexDirection:"row",
+    justifyContent:"space-between",
     backgroundColor: 'rgba(238, 238, 238, 1)',
-    height: '25%',
+    height:55,
     width: Dimensions.get('window').width*0.88,
-     marginVertical:10,
-    paddingLeft: 15,
+    marginVertical:10,
+    padding: 15,
     borderRadius: 20,
+  },
+  inputbox:{
+    width:"80%",
+    height:24,
+  },
+  eyesvg:{
+    position:"absolute",
+    right:20,
+   
   },
   signInButton: {
     backgroundColor: '#77B0AA',
@@ -144,7 +168,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width*0.68 ,
     justifyContent: 'center',
     borderRadius: 25,
-    marginBottom:0,
+    marginVertical:10,
   },
   signInText: {
     textAlign: 'center',

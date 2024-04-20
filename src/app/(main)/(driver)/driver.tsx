@@ -13,6 +13,7 @@ import StartRide from "@/src/components/StartRide";
 import NearbyPassengers from "@/src/components/NearbyPassengers";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet from "@gorhom/bottom-sheet";
+import SOSActivity from "@/src/components/sos";
 
 export default function DriverScreen() {
   const [state, setState] = useState({
@@ -136,6 +137,7 @@ export default function DriverScreen() {
           />
         )}
       </ScrollView>
+        <SOSActivity/>
       </BottomSheet>
     </GestureHandlerRootView>
   );

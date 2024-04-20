@@ -8,7 +8,8 @@ import {
   Alert,
   Button,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
   
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
@@ -20,6 +21,7 @@ import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import db from "@react-native-firebase/database";
 import axios from 'axios';
 import { Link } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function TabOneScreen() {
 
@@ -29,6 +31,10 @@ export default function TabOneScreen() {
   const [password, setPassword] = useState<string | undefined>();
   const [phone, setPhone] = useState<string | undefined>();
   const [show,setshow] = useState(false);
+  const [shows,setshows] = useState(false);
+  const [visible,setvisible] = useState(false);
+
+
   const nav = useNavigation<NativeStackNavigationProp<any>>();
 
   const createProfile = async (response: FirebaseAuthTypes.UserCredential) => {
@@ -109,17 +115,23 @@ export default function TabOneScreen() {
               onChangeText={setPhone}
               autoCapitalize="none"
             />
+            <View style={styles.Password}>
             <TextInput
-              style={styles.loginTextField}
+              style={{width:"50%"}}
               placeholder="Password"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntry ={visible}
             />
+            <TouchableOpacity onPress={()=>{setshow(!show) ,setvisible(!visible)}}>
+                  <MaterialCommunityIcons name={show===false? 'eye':'eye-off'} size={25} color={'#3C5B6F'} style={styles.eyesvg}/>
+                 </TouchableOpacity>
+            </View>
+            
           </View>
           <View style={styles.buttoncontainer}>
           <Pressable onPress={registerAndGoToMainFlow} style={styles.signInButton}><Text style={styles.signInText}>Sign Up</Text></Pressable>
-          <ActivityIndicator size={"large"} color={"blue"} animating={show}>
+          <ActivityIndicator size={"large"} color={"blue"} animating={shows}>
           </ActivityIndicator>
           <Link href={'/signIn'}><Text style={styles.Remainder}>Already have an account? SignIn</Text></Link>
           </View>
@@ -175,6 +187,23 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     color:"black",
     backgroundColor: "white",
+  },
+  Password:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    alignItems:"center",
+    height: 50,
+    width:"95%",
+    borderWidth: 2,
+    borderRadius:20,
+    borderColor:"rgba(240, 240, 230, 1)",
+    paddingLeft:15,
+    marginVertical: 20,
+    backgroundColor: "white",
+
+  },
+  eyesvg:{
+    right:15,
     
     
   },
