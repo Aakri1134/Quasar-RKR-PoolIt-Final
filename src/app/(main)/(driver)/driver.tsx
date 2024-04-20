@@ -68,6 +68,8 @@ export default function DriverScreen() {
   const handleOpenPress = () => bottomSheetRef.current?.expand();
   const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
 
+  const [name, setName] = useState("Current Location");
+
   const nav = useNavigation<NativeStackNavigationProp<any>>();
 
   async function putCurrentLocation() {
@@ -114,31 +116,41 @@ export default function DriverScreen() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, marginTop: 50 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <DriverMap
         latitude={state.destinationCords.latitude}
         longitude={state.destinationCords.longitude}
       />
       <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
-      <ScrollView
-        style={{ backgroundColor: "white", flex: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        {!hasStartedRide && (
-          <StartRide
-            fetchDestination={fetchDestination}
-            hasStartedRidefun={hasStartedRidefun}
-          />
-        )}
-        {hasStartedRide && (
-          <NearbyPassengers
-            hasStoppedRidefun={hasStoppedRidefun}
-            destinationCoords={state.destinationCords}
-          />
-        )}
-        <Sos />
-      </ScrollView>
-      
+        <ScrollView
+          style={{ backgroundColor: "white", flex: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {!hasStartedRide && (
+            <View style={{ flex: 1 }}>
+              <GooglePlacesAutocomplete
+                placeholder={name}
+                fetchDetails={true}
+                onPress={(data, detail) => {
+                  fetchDestination(data, detail);
+                  setName(data.description);
+                }}
+                query={{
+                  key: "AIzaSyA4IGQAa3lWLh2jy1gRqEjybQ5aAqVDKcg",
+                  language: "en",
+                }}
+              />
+              <Button title="Start" onPress={hasStartedRidefun} />
+            </View>
+          )}
+          {hasStartedRide && (
+            <NearbyPassengers
+              hasStoppedRidefun={hasStoppedRidefun}
+              destinationCoords={state.destinationCords}
+            />
+          )}
+          <Sos />
+        </ScrollView>
       </BottomSheet>
     </GestureHandlerRootView>
   );

@@ -74,7 +74,7 @@ export default function NearbyPassengers(props) {
   async function fetchPassengers() {
     console.log("sent");
     await axios
-      .post("http://192.168.17.226:3000/getpassenger/", {
+      .post("http://192.168.56.226:3000/getpassenger/", {
         latitude: state.currentLocation.latitude,
         longitude: state.currentLocation.longitude,
         lat: state.destinationCords.latitude,
@@ -105,7 +105,7 @@ export default function NearbyPassengers(props) {
 
   async function completeRide(){
     console.log(driveruid);  
-    await axios.post("http://192.168.17.226:3000/ridecompletion/",{
+    await axios.post("http://192.168.56.226:3000/ridecompletion/",{
       driveruid : driveruid,
       rideruid : confirmedpassengerinfo[4]
     })
@@ -136,7 +136,7 @@ export default function NearbyPassengers(props) {
                   console.log("sent2");
 
                   await axios
-                    .post("http://192.168.17.226:3000/rideconfirmation/", {
+                    .post("http://192.168.56.226:3000/rideconfirmation/", {
                       driveruid: driveruid,
                       passuid: e[0][0].uid,
                       drivercurlat: state.currentLocation.latitude,
