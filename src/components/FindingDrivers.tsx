@@ -7,6 +7,10 @@ import auth from "@react-native-firebase/auth";
    
 export function FindingDrivers(props){
 
+
+    const {cancBooking, bookingConf}= props
+
+
     const [uid, setUid]= useState("")
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
@@ -17,8 +21,16 @@ export function FindingDrivers(props){
         });
     },[])
     
+    const confirmBooking = async ()=>{
+        bookingConf()
+        setFoundDriver(true)
+        console.log("Ride Found Finding Drivers")
+    }
 
+    const [foundDriver, setFoundDriver]= useState(true)
     const [valid, setValidity]= useState(true)
+
+
     const cancelBooking =async ()=>{
         cancBooking()
         setValidity(false)
@@ -30,36 +42,33 @@ export function FindingDrivers(props){
                 .catch((e)=>{console.log(e)})
       }
 
-const {cancBooking, bookingConf}= props
     useEffect(()=>{
-        const interval = setInterval(async ()=>{
-            await axios.get("http://192.168.17.226:3000/ridecheck/",{
+        const interval = setInterval( ()=>{
+             axios.post("http://192.168.17.226:3000/ridecheck/",{
                 uid: uid,
             })
             .then((r)=>{
-                console.log(r.data)
-                if(r.data.Status=="true"){
-                    bookingConf()
-                    clearInterval(interval);
+                console.log("output",r.data)
+                if(r.data){
+                    confirmBooking()
+                    clearInterval(interval)
+                }else{
+                    setFoundDriver(false)
                 }
-                
-            })
-            .catch((e)=>{console.log(e)})
-            console.log(1)
-            
             if(!valid){
-                clearInterval(interval);
+                clearInterval(interval)
             }
-
+        })
+            .catch((e)=>{console.log(e)})
             
-        },6000);
-
+        },5000);
+   
         return()=>clearInterval(interval)
       },[valid])
     return(
         <View>
             <Button onPress={cancelBooking} title="Cancel Booking"/>
-            <Text>Hi There</Text>
+            <Text>{foundDriver}</Text>
        </View>
     )
 }

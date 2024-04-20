@@ -13,7 +13,11 @@ import StartRide from "@/src/components/StartRide";
 import NearbyPassengers from "@/src/components/NearbyPassengers";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet from "@gorhom/bottom-sheet";
+<<<<<<< HEAD
 import SOSActivity from "@/src/components/sos";
+=======
+import Sos from "@/src/components/Sos";
+>>>>>>> 2fa456833f95a64600f22dc948d5faafd87e9029
 
 export default function DriverScreen() {
   const [state, setState] = useState({
@@ -68,6 +72,8 @@ export default function DriverScreen() {
   const handleOpenPress = () => bottomSheetRef.current?.expand();
   const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
 
+  const [name, setName] = useState("Current Location");
+
   const nav = useNavigation<NativeStackNavigationProp<any>>();
 
   async function putCurrentLocation() {
@@ -114,12 +120,13 @@ export default function DriverScreen() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, marginTop: 50 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <DriverMap
         latitude={state.destinationCords.latitude}
         longitude={state.destinationCords.longitude}
       />
       <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
+<<<<<<< HEAD
       <ScrollView
         style={{ backgroundColor: "white", flex: 1 }}
         keyboardShouldPersistTaps="handled"
@@ -138,6 +145,37 @@ export default function DriverScreen() {
         )}
       </ScrollView>
         <SOSActivity/>
+=======
+        <ScrollView
+          style={{ backgroundColor: "white", flex: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {!hasStartedRide && (
+            <View style={{ flex: 1 }}>
+              <GooglePlacesAutocomplete
+                placeholder={name}
+                fetchDetails={true}
+                onPress={(data, detail) => {
+                  fetchDestination(data, detail);
+                  setName(data.description);
+                }}
+                query={{
+                  key: "AIzaSyA4IGQAa3lWLh2jy1gRqEjybQ5aAqVDKcg",
+                  language: "en",
+                }}
+              />
+              <Button title="Start" onPress={hasStartedRidefun} />
+            </View>
+          )}
+          {hasStartedRide && (
+            <NearbyPassengers
+              hasStoppedRidefun={hasStoppedRidefun}
+              destinationCoords={state.destinationCords}
+            />
+          )}
+          <Sos />
+        </ScrollView>
+>>>>>>> 2fa456833f95a64600f22dc948d5faafd87e9029
       </BottomSheet>
     </GestureHandlerRootView>
   );
