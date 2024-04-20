@@ -201,7 +201,7 @@ export default function HomeScreen() {
       console.log("destlat", state.droplocationCors.longitude);
       console.log("destlong", state.droplocationCors.longitude);
       await axios
-        .post("http://192.168.17.226:3000/getdriver/", {
+        .post("http://192.168.56.226:3000/getdriver/", {
           latitude:
             state.pickupCords.latitude == 0
               ? Object.keys(currentLocation).length > 0
