@@ -1,19 +1,31 @@
-import { Button, Pressable, Text, View } from "react-native";
+import React, { useState } from 'react';
+import { Button, Text, TextInput, View } from 'react-native';
+import { Linking } from 'react-native';
 
+const SOSApp = () => {
+  const [emergencyNumber, setEmergencyNumber] = useState('9113156691');
+  const [sosMessage, setSOSMessage] = useState('Help! I am in an emergency.');
 
-export default function Sos(){
+  const handleSOSPress = () => {
+    const url ='tel:${emergencyNumber}' ; // Format for phone call
+    Linking.openURL(url); // Attempt to call emergency number
+    alert(sosMessage); // Display SOS message
+  };
 
-    function system(){
-          
-    }
+  return (
+    <View >
+      
+      <TextInput
+        value={sosMessage}
+        onChangeText={setSOSMessage}
+        multiline={true}
+        numberOfLines={4}
+        style={{ padding: 10, borderWidth: 1 }}
+        placeholder='message'
+      />
+      <Button title="SOS" onPress={handleSOSPress} />
+    </View>
+  );
+};
 
-
-
-    return (
-        <View style={{flex:1}}>
-            <Pressable onPress={system} style={{backgroundColor:"red"}}>
-                <Text>SOS</Text>
-            </Pressable>
-        </View>
-    )
-}
+export default SOSApp;
