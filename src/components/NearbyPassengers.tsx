@@ -66,6 +66,7 @@ export default function NearbyPassengers(props) {
   useEffect(() => {
     const interval = setInterval(async () => {
       getCurrentLocation();
+      fetchPassengers();
     }, 4000);
     return () => clearInterval(interval);
   });
@@ -100,6 +101,23 @@ export default function NearbyPassengers(props) {
   const [rideConfirm, setRideConfirm] = useState(false);
 
   const [confirmedpassengerinfo, setconfirmedpassengerinfo] = useState([]);
+
+  async function completeRide(){
+    await axios.post("http://192.168.17.226:3000/ridecompletion/",{
+      driveruid : driveruid,
+      rideruid : confirmedpassengerinfo[4].uid
+    })
+    .then((r)=>{
+      console.log(r.data)
+      props.hasStoppedRidefun();
+    
+    }
+     
+
+  )
+    .catch((e)=>{console.log(e)})
+
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -142,9 +160,9 @@ export default function NearbyPassengers(props) {
         <Button title="Stop Searching" onPress={props.hasStoppedRidefun} />
       </ScrollView>}
       {rideConfirm && <ScrollView>
-        <Text>name : {confirmedpassengerinfo[0]} {confirmedpassengerinfo[1]}</Text>
-        <Text>phone : {confirmedpassengerinfo[3]}</Text>
-        <Button title="complete ride" onPress={props.hasStoppedRidefun} />
+        <Text>name : {confirmedpassengerinfo[0].first_name} {confirmedpassengerinfo[1].last_name}</Text>
+        <Text>phone : {confirmedpassengerinfo[3].phone}</Text>
+        <Button title="complete ride" onPress={completeRide}/>
       </ScrollView>}
     </View>
   );

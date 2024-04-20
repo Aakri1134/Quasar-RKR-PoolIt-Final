@@ -13,6 +13,7 @@ import StartRide from "@/src/components/StartRide";
 import NearbyPassengers from "@/src/components/NearbyPassengers";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet from "@gorhom/bottom-sheet";
+import Sos from "@/src/components/Sos";
 
 export default function DriverScreen() {
   const [state, setState] = useState({
@@ -135,7 +136,9 @@ export default function DriverScreen() {
             destinationCoords={state.destinationCords}
           />
         )}
+        <Sos />
       </ScrollView>
+      
       </BottomSheet>
     </GestureHandlerRootView>
   );
