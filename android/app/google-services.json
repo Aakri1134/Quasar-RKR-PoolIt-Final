@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "529232607379",
+    "firebase_url": "https://rkr-poolit-default-rtdb.firebaseio.com",
+    "project_id": "rkr-poolit",
+    "storage_bucket": "rkr-poolit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529232607379:android:df334bc31e4a6d38dab566",
+        "android_client_info": {
+          "package_name": "com.rkr.poolit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkfX-jJegdATqcbgNWPb-gxm_0CAf8uEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529232607379:android:24eff43c08238b29dab566",
+        "android_client_info": {
+          "package_name": "com.x20surya.PoolIt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkfX-jJegdATqcbgNWPb-gxm_0CAf8uEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
