@@ -91,6 +91,7 @@ export default function NearbyPassengers(props) {
   }
 
   const [driveruid, setDriveruid] = useState("");
+
   auth().onAuthStateChanged((user) => {
     if (user) {
       setDriveruid(user.uid);
@@ -103,9 +104,10 @@ export default function NearbyPassengers(props) {
   const [confirmedpassengerinfo, setconfirmedpassengerinfo] = useState([]);
 
   async function completeRide(){
+    console.log(driveruid);  
     await axios.post("http://192.168.17.226:3000/ridecompletion/",{
       driveruid : driveruid,
-      rideruid : confirmedpassengerinfo[4].uid
+      rideruid : confirmedpassengerinfo[4]
     })
     .then((r)=>{
       console.log(r.data)
