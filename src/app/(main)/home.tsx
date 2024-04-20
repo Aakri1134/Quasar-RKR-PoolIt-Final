@@ -21,6 +21,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MapPassenger } from "@/src/components/MapPassenger";
 import ContentLoader, { Rect, Circle, Path } from "react-content-loader/native";
 import { StyleSheet } from "react-native";
+import { MapPassengerDynamic } from "@/src/components/MapPassengerDynamic";
 
 export default function HomeScreen() {
   //true if Ride is booked & but driver may or may not be found
@@ -46,26 +47,12 @@ export default function HomeScreen() {
 
   const [currentLocation, setCurrentLocation] = useState({});
 
-  // useEffect(()=>{
-  //   const interval = setInterval(async ()=>{
-  //     let location = await Location.getCurrentPositionAsync({});
-  //     setLocation(location);
-  //   },10000);
-  //   return ()=>clearInterval(interval);
-  // })
-
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const handleClosePress = () => bottomSheetRef.current?.close();
   const handleMnimizePress = () => bottomSheetRef.current?.snapToIndex(0);
   const handleOpenPress = () => bottomSheetRef.current?.expand();
   const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
-  // const BottomSheetComp= gestureHandlerRootHOC(()=> {
-  //
-
-  //   return (
-
-  // )})
 
   const nav = useNavigation<NativeStackNavigationProp<any>>();
 
@@ -87,6 +74,8 @@ export default function HomeScreen() {
       },
     });
   }
+
+  const [pickupStatus, setPickupStatus]= useState(false)
 
   async function putCurrentLocation() {
     location = await Location.getCurrentPositionAsync({});
@@ -230,14 +219,68 @@ export default function HomeScreen() {
     console.log("Ride Cancelled Home");
     setValidity(false);
   };
+
+  //-------------------------------------------------------------after ride confirmed---------------------------------------------------------------------------------
+
+  const [driverInfo, setDriverInfo]= useState({
+    name:"",
+    phoneNumber:0,
+    picklat: 0,
+    picklong: 0,
+    droplat:0,
+    droplong:0,
+  });
+
   const bookingConf = async () => {
     console.log("Ride Confirmed home");
-    setBookingStatus(true);
+
+    await axios.post("http://192.168.56.226:3000/fetchdriver/", {
+          uid: uid,
+        }).then((r)=>{
+          console.log("lllla",r.data);
+          let m1=r.data[1].first_name+ " " +r.data[1].last_name
+          let m2=Number(r.data[1].phone)
+          let m3=Number( r.data[0].pass_curlat)
+          let m4=Number(r.data[0].pass_curlong)
+          let m5=Number(r.data[0].pass_destlat)
+          let m6=Number(r.data[0].pass_destlong)
+
+          console.log(m1," ",m2," ",m3," ",m4," ",m5," ",m6);
+          assign(m1,m2,m3,m4,m5,m6)
+          
+          console.log("pp", driverInfo)
+
+          setBookingStatus(true)
+          console.log('gg')
+        })
   };
+
+function assign(m1,m2,m3,m4,m5,m6){
+  console.log(m1," ",m2," ",m3," ",m4," ",m5," ",m6);
+  setDriverInfo({
+    name:m1 ,
+    phoneNumber: m2,
+    picklat:m3,
+    picklong:m4 ,
+    droplat:m5,
+    droplong:m6,
+  })
+  console.log("pppp", driverInfo)
+}
+
+function pickupstatus(){
+  setPickupStatus(true)
+}
+const [dropStatus, setDropStatus]= useState(false)
+function dropstatus(){
+  setDropStatus(true);
+  setBookingStatus(false)
+  setValidity(false)
+}
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <MapPassenger
+      {!rideBooked && (<MapPassenger
         dropLat={state.droplocationCors.latitude}
         dropLong={state.droplocationCors.longitude}
         pickLat={
@@ -254,14 +297,18 @@ export default function HomeScreen() {
               : 0
             : state.pickupCords.longitude
         }
-      />
+      />)}
 
       {!validForBooking && !rideBooked && (
-        <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
+        <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints} 
+        handleIndicatorStyle={{backgroundColor: 'rgba(160, 160, 160, 1)'}}
+        backgroundStyle={{backgroundColor: 'rgba(209, 209, 209, 1)'}}>
           <ScrollView
-            style={{ backgroundColor: "white" }}
+            style={{ backgroundColor: "rgba(209, 209, 209, 1)" }}
             keyboardShouldPersistTaps="handled"
           >
+            <View style={styles.container}>
+            <View>
             <Text style={styles.lableInputField}>Enter Pickup Location</Text>
             <GooglePlacesAutocomplete
               placeholder={state.pickupCords.name}
@@ -272,6 +319,8 @@ export default function HomeScreen() {
                 language: "en",
               }}
             />
+            <Button title="use current location" onPress={putCurrentLocation} />
+            </View>
             <Text style={styles.lableInputField}>Enter Drop Location</Text>
             <GooglePlacesAutocomplete
               placeholder={state.droplocationCors.name}
@@ -282,13 +331,21 @@ export default function HomeScreen() {
                 language: "en",
               }}
             />
-            <Button title="use current location" onPress={putCurrentLocation} />
+            
             <Button onPress={confirmBooking} title="Confirm Booking" />
+            </View>
           </ScrollView>
         </BottomSheet>
       )}
+      {rideBooked && (<MapPassengerDynamic
+        picklat={driverInfo.picklat}
+        picklong={driverInfo.picklong}
+        droplat={driverInfo.droplat}
+        droplong={driverInfo.droplong}
+        pickupStatus={pickupStatus}
+       />)}
       {validForBooking && !rideBooked && (
-        <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
+        <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints} style={{}}>
           <ScrollView>
             <Text>Finding Drivers</Text>
 
@@ -302,7 +359,10 @@ export default function HomeScreen() {
       {validForBooking && rideBooked && (
         <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
           <ScrollView>
-            <Text>Found Drivers</Text>
+            <Text>Driver Name= {driverInfo.name}</Text>
+            <Text>Driver Phone Number= {driverInfo.phoneNumber}</Text>
+            {!pickupStatus && <Button onPress={pickupstatus} title="Confirm Pickup"/>}
+            {pickupStatus && <Button onPress={dropstatus} title="Confirm Drop off"/>}
           </ScrollView>
         </BottomSheet>
       )}
@@ -313,6 +373,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+
+  },
   lableInputField: {
     color: "blue",
   },

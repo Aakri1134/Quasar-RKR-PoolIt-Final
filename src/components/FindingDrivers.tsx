@@ -75,9 +75,8 @@ export function FindingDrivers(props) {
   }, []);
   return (
     <View>
-        <Button onPress={ping} title="system" />
+      <Button onPress={ping} title="Refresh" />
       <Button onPress={cancelBooking} title="Cancel Booking" /> 
-      <Text>{foundDriver}</Text>
     </View>
   );
 }
