@@ -14,6 +14,7 @@ import NearbyPassengers from "@/src/components/NearbyPassengers";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet from "@gorhom/bottom-sheet";
 import Sos from "@/src/components/sos";
+import auth from "@react-native-firebase/auth"
 
 export default function DriverScreen() {
   const [state, setState] = useState({
@@ -56,6 +57,7 @@ export default function DriverScreen() {
       longitude: 0,
     },
   });
+
 
   const [hasStartedRide, setHasStartedRide] = useState(false);
 
@@ -116,11 +118,23 @@ export default function DriverScreen() {
     
   }
 
+  const [fetchroute,setfetchroute] = useState(false);
+
+  function fetchRoute(){
+      setfetchroute(true);
+  }
+
+
+  
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <DriverMap
         latitude={state.destinationCords.latitude}
         longitude={state.destinationCords.longitude}
+        fetchroute = {fetchroute}
+        
+
       />
       <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
         <ScrollView
@@ -148,6 +162,7 @@ export default function DriverScreen() {
             <NearbyPassengers
               hasStoppedRidefun={hasStoppedRidefun}
               destinationCoords={state.destinationCords}
+              fetchRoute = {fetchRoute}
             />
           )}
           <Sos />

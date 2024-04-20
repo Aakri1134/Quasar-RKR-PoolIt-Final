@@ -5,6 +5,7 @@ import * as Location from "expo-location";
 import MapViewDirections from "react-native-maps-directions";
 import axios from "axios";
 import { Button, View } from "react-native";
+import auth from "@react-native-firebase/auth"
 
 export default function DriverMap(props) {
   const [state, setState] = useState({
@@ -57,10 +58,30 @@ export default function DriverMap(props) {
     setState({
       ...state,
       currentLocation: {
+        name : "system",
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       },
     });
+  }
+
+  const [uid, setUid] = useState("");
+
+  auth().onAuthStateChanged((user)=>{
+      if(user){
+        setUid(user.uid);
+      }
+  })
+
+
+  async function sendCurrentLocation(){
+    await axios.post("http://192.168.56.226:3000/updatedriverlocation",{
+      uid : uid,
+      lat : state.currentLocation.latitude,
+      long : state.currentLocation.longitude
+    })
+    .then((e)=>{console.log(e.data)})
+    .catch((e)=>{console.log(e)})
   }
 
   //-----------------------------------------------for current location--------------------------------------------------
@@ -68,10 +89,10 @@ export default function DriverMap(props) {
   let location;
   const assignCurrentLocation = useCallback(async () => {
     location = await Location.getCurrentPositionAsync({});
-    console.log("durrr", location);
+    
 
     setPresentLocation(location);
-    console.log("purrr", presentLocation);
+    
 
     let nm2 = state.currentLocation.name;
 
@@ -90,12 +111,19 @@ export default function DriverMap(props) {
     }, 1000);
   }, [assignCurrentLocation]);
 
+  const [fetchPassengersrepeat, setfetchPassengersrepeat] = useState(false);
+
 
   useEffect(() => {
     const interval = setInterval(async () => {
       getCurrentLocation();
-      fetchPassengers();
-      console.log(1);
+      sendCurrentLocation();
+      if(fetchPassengersrepeat){
+        fetchPassengers();
+        if(props.fetchroute){
+          console.log("system bhaita diya hai");
+       }
+      }
     }, 4000);
     return () => clearInterval(interval);
   });
@@ -103,7 +131,7 @@ export default function DriverMap(props) {
   async function fetchPassengers() {
     console.log("pp");
     await axios
-      .post("http://192.168.29.196:3000/getpassenger/", {
+      .post("http://192.168.56.226:3000/getpassenger/", {
         latitude: state.currentLocation.latitude,
         longitude: state.currentLocation.longitude,
         lat: props.latitude,
@@ -114,13 +142,131 @@ export default function DriverMap(props) {
       })
       .catch((e) => {
         console.log(e);
-      });
-      
+      });   
   }
-  console.log("cu", state.currentLocation);
-  console.log("pr", presentLocation);
+
+  async function getRouteInfo(){
+    await axios.post("http://192.168.56.226:3000/getallpassenger",{
+      uid : "OB3u3CFHbEds8eMb4iRoyCthnrh1"
+    })
+    .then((r)=>{
+      console.log(r.data)
+
+      if(r.data.length == 1){
+
+        let m1 = Number(r.data[0].pass_curlat)
+        let m2 = Number(r.data[0].pass_curlong)
+        let m3 = Number(r.data[0].pass_destlat)
+        let m4 = Number(r.data[0].pass_destlong)
+
+        setState({
+          ...state,
+          passenger1Cords : {
+            pickupCords : {
+              latitude : m1,
+              longitude : m2
+            },
+            destinationCords : {
+              latitude : m3,
+              longitude : m4
+            }
+          }
+        })
+      }
+      if(r.data.length == 2){
+
+        let m1 = Number(r.data[0].pass_curlat)
+        let m2 = Number(r.data[0].pass_curlong)
+        let m3 = Number(r.data[0].pass_destlat)
+        let m4 = Number(r.data[0].pass_destlong)
+        let m5 = Number(r.data[1].pass_curlat)
+        let m6 = Number(r.data[1].pass_curlong)
+        let m7 = Number(r.data[1].pass_destlat)
+        let m8 = Number(r.data[1].pass_destlong)
+         
+
+        setState({
+          ...state,
+          passenger1Cords : {
+            pickupCords : {
+              latitude : m1,
+              longitude : m2
+            },
+            destinationCords : {
+              latitude : m3,
+              longitude : m4
+            }
+          },
+          passenger2Cords : {
+            pickupCords : {
+              latitude : m5,
+              longitude : m6
+            },
+            destinationCords : {
+              latitude : m7,
+              longitude : m8
+            }
+          }
+
+        })
+      }
+      if(r.data.length == 3){
+
+        let m1 = Number(r.data[0].pass_curlat)
+        let m2 = Number(r.data[0].pass_curlong)
+        let m3 = Number(r.data[0].pass_destlat)
+        let m4 = Number(r.data[0].pass_destlong)
+        let m5 = Number(r.data[1].pass_curlat)
+        let m6 = Number(r.data[1].pass_curlong)
+        let m7 = Number(r.data[1].pass_destlat)
+        let m8 = Number(r.data[1].pass_destlong)
+        let m9 = Number(r.data[2].pass_curlat)
+        let m10 = Number(r.data[2].pass_curlong)
+        let m11 = Number(r.data[2].pass_destlat)
+        let m12 = Number(r.data[2].pass_destlong)
+
+
+        setState({
+          ...state,
+          passenger1Cords : {
+            pickupCords : {
+              latitude : m1,
+              longitude : m2
+            },
+            destinationCords : {
+              latitude : m3,
+              longitude : m4
+            }
+          },
+          passenger2Cords : {
+            pickupCords : {
+              latitude : m5,
+              longitude : m6
+            },
+            destinationCords : {
+              latitude : m7,
+              longitude : m8
+            }
+          },
+          passenger3Cords : {
+            pickupCords : {
+              latitude : m9,
+              longitude : m10
+            },
+            destinationCords : {
+              latitude : m11,
+              longitude : m12
+            }
+          }
+        })
+      }
+    })
+    .catch((e)=>{console.log(e)})
+  }
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginTop:40 }}>
+      <Button title="get info" onPress={getRouteInfo} />
       <MapView
         style={{ width: "100%", height: "100%", flex: 1 }}
         ref={mapRef}
@@ -141,18 +287,65 @@ export default function DriverMap(props) {
         }}
         customMapStyle={MapViewStyle}
       >
+        {/*  */}
         <Marker
           coordinate={{
             latitude: state.currentLocation.latitude,
             longitude: state.currentLocation.longitude,
           }}
         />
-        <Marker
+        {state.passenger1Cords.pickupCords.latitude != 0 ?<Marker
+          coordinate={{
+            latitude : state.passenger1Cords.pickupCords.latitude,
+            longitude : state.passenger1Cords.pickupCords.longitude
+          }}
+        
+        /> : null}
+        {/* passenger 1 coords */}
+        {state.passenger1Cords.pickupCords.latitude != 0 ? <Marker
+          coordinate={{
+            latitude : state.passenger1Cords.destinationCords.latitude,
+            longitude : state.passenger1Cords.destinationCords.longitude
+          }}
+        
+        /> : null}
+        {state.passenger1Cords.pickupCords.latitude !=0 ?<Marker
+          coordinate={{
+            latitude : state.passenger2Cords.pickupCords.latitude,
+            longitude : state.passenger2Cords.pickupCords.longitude
+          }}
+        
+        /> : null}
+        {/* passenger 2 coords */}
+        {state.passenger1Cords.pickupCords.latitude != 0 ? <Marker
+          coordinate={{
+            latitude : state.passenger2Cords.destinationCords.latitude,
+            longitude : state.passenger2Cords.destinationCords.longitude
+          }}
+        
+        /> : null}
+        {state.passenger1Cords.pickupCords.latitude != 0 ?<Marker
+          coordinate={{
+            latitude : state.passenger3Cords.pickupCords.latitude,
+            longitude : state.passenger3Cords.pickupCords.longitude
+          }}
+        
+        /> : null}
+        {/* passenger 3 coords */}
+       {state.passenger1Cords.pickupCords.latitude !=0 ? <Marker
+          coordinate={{
+            latitude : state.passenger3Cords.destinationCords.latitude,
+            longitude : state.passenger3Cords.destinationCords.longitude
+          }}
+        
+        /> : null}
+         <Marker
           coordinate={{
             latitude: props.latitude,
             longitude: props.longitude,
           }}
         />
+        
         <MapViewDirections
           origin={state.currentLocation}
           destination={{
@@ -175,7 +368,9 @@ export default function DriverMap(props) {
             });
           }}
         />
+        
       </MapView>
+      
     </View>
   );
 }

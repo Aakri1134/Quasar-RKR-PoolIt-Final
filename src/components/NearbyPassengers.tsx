@@ -101,7 +101,12 @@ export default function NearbyPassengers(props) {
 
   const [rideConfirm, setRideConfirm] = useState(false);
 
-  const [confirmedpassengerinfo, setconfirmedpassengerinfo] = useState([]);
+  const [confirmedpassengerinfo, setconfirmedpassengerinfo] = useState({
+    passenger1info : [],
+    passenger2info : [],
+    passenger3info : []
+
+  });
 
   async function completeRide(){
     console.log(driveruid);  
@@ -111,8 +116,6 @@ export default function NearbyPassengers(props) {
     })
     .then((r)=>{
       console.log(r.data)
-      props.hasStoppedRidefun();
-    
     }
      
 
@@ -123,7 +126,7 @@ export default function NearbyPassengers(props) {
 
   return (
     <View style={{ flex: 1 }}>
-      {!rideConfirm && <ScrollView style={{ flex: 1 }}>
+      { <ScrollView style={{ flex: 1 }}>
         {passengerinfo.length == 0 || passengerinfo == undefined ? (
           <Text>system</Text>
         ) : (
@@ -134,7 +137,7 @@ export default function NearbyPassengers(props) {
                 title="confirm"
                 onPress={async () => {
                   console.log("sent2");
-
+                  props.fetchRoute();
                   await axios
                     .post("http://192.168.56.226:3000/rideconfirmation/", {
                       driveruid: driveruid,
@@ -145,10 +148,29 @@ export default function NearbyPassengers(props) {
                       driverdestlong: state.destinationCords.longitude,
                     })
                     .then((r) => {
+                      
                       console.log(r.data);
                       console.log(JSON.stringify(r.data));
-                      setconfirmedpassengerinfo(r.data);
+                      if(confirmedpassengerinfo.passenger1info.length == 0){
+                        console.log("sus");
+                        let m1 = r.data
+                        setconfirmedpassengerinfo({
+                          ...confirmedpassengerinfo, passenger1info : m1
+                        });
+                      } else if (confirmedpassengerinfo.passenger2info.length == 0){
+                        let m2 = r.data
+                        setconfirmedpassengerinfo({
+                          ...confirmedpassengerinfo, passenger2info : m2
+                        })
+                      } else if (confirmedpassengerinfo.passenger3info.length == 0){
+                        let m3 = r.data
+                        setconfirmedpassengerinfo({
+                          ...confirmedpassengerinfo, passenger3info : m3
+                        })
+                      }
+                      
                       setRideConfirm(true);
+                      
                     })
                     .catch((e) => {
                       console.log(e);
@@ -161,11 +183,24 @@ export default function NearbyPassengers(props) {
         <Button title="Search" onPress={fetchPassengers} />
         <Button title="Stop Searching" onPress={props.hasStoppedRidefun} />
       </ScrollView>}
-      {rideConfirm && <ScrollView>
-        <Text>name : {confirmedpassengerinfo[0].first_name} {confirmedpassengerinfo[1].last_name}</Text>
-        <Text>phone : {confirmedpassengerinfo[3].phone}</Text>
+      {confirmedpassengerinfo.passenger1info.length > 0 && <ScrollView>
+        <Text>name : {confirmedpassengerinfo.passenger1info[0].first_name} {confirmedpassengerinfo.passenger1info[1].last_name}</Text>
+        <Text>phone : {confirmedpassengerinfo.passenger1info[3].phone}</Text>
         <Button title="complete ride" onPress={completeRide}/>
+        
       </ScrollView>}
+      {confirmedpassengerinfo.passenger2info.length > 0 && <ScrollView>
+        <Text>name : {confirmedpassengerinfo.passenger2info[0].first_name} {confirmedpassengerinfo.passenger2info[1].last_name}</Text>
+        <Text>phone : {confirmedpassengerinfo.passenger2info[3].phone}</Text>
+        <Button title="complete ride" onPress={completeRide}/>
+        
+      </ScrollView> }
+      {confirmedpassengerinfo.passenger3info.length > 0 && <ScrollView>
+        <Text>name : {confirmedpassengerinfo.passenger3info[0].first_name} {confirmedpassengerinfo.passenger3info[1].last_name}</Text>
+        <Text>phone : {confirmedpassengerinfo.passenger3info[3].phone}</Text>
+        <Button title="complete ride" onPress={completeRide}/>
+      </ScrollView> }
+      <Button title="complete ride" onPress={props.hasStoppedRidefun}/>
     </View>
   );
 }
