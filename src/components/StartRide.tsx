@@ -12,6 +12,6 @@ export default function StartRide(props){
   
 
     return(
-        
+        <View></View>
     )
 }
