@@ -219,9 +219,9 @@ const cancBooking =async ()=>{
   setValidity(false);
   
 }
-const bookingConf =async ()=>{
+const bookingConf = async ()=>{
   console.log("Ride Confirmed home")
-  setBookingStatus(true)
+  setBookingStatus(true);
 
 }
 
@@ -271,7 +271,7 @@ const bookingConf =async ()=>{
             <Text>Finding Drivers</Text>
             
             
-            <FindingDrivers cancBooking={cancBooking} bookinkConf={bookingConf}/>
+            <FindingDrivers cancBooking={cancBooking} bookingConf={bookingConf} />
           </ScrollView>
         </BottomSheet>
         }
