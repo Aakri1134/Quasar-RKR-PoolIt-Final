@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Alert, Button, FlatList, ScrollView, Text, View } from "react-native";
+import { Alert, Button, Dimensions, FlatList, Pressable, ScrollView, Text, View } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import auth from "@react-native-firebase/auth";
@@ -108,14 +108,17 @@ export default function NearbyPassengers(props) {
 
   });
 
+  const [passenger1complete, setpassenger1complete] = useState(false);
+
   async function completeRide(){
     console.log(driveruid);  
     await axios.post("http://192.168.56.226:3000/ridecompletion/",{
       driveruid : driveruid,
-      rideruid : confirmedpassengerinfo[4]
+      rideruid : confirmedpassengerinfo.passenger1info[4]
     })
     .then((r)=>{
       console.log(r.data)
+      setpassenger1complete(true);
     }
      
 
@@ -126,15 +129,27 @@ export default function NearbyPassengers(props) {
 
   return (
     <View style={{ flex: 1 }}>
-      { <ScrollView style={{ flex: 1 }}>
+      { <ScrollView style={{ flex: 1, backgroundColor:'rgba(242, 242, 242, 0.9)' }}>
         {passengerinfo.length == 0 || passengerinfo == undefined ? (
-          <Text>system</Text>
+          <Text>Searching...</Text>
         ) : (
           passengerinfo.map((e) => (
-            <View key={e[0][0].id}>
-              <Text style={{ color: "black" }}>{e[0][0].first_name}</Text>
-              <Button
-                title="confirm"
+            <View key={e[0][0].id}
+            style={{backgroundColor:'white',
+             borderRadius: 20, borderWidth:1,
+              borderColor:'rgba(156, 156, 156, 0.9)',
+              padding: 10,
+              marginBottom: 20,
+              }}>
+              <Text style={{ color: "black" }}>{e[0][0].first_name} {e[0][0].last_name}</Text>
+              <Text style={{ color: "black" }}>{e[0][0].phone}</Text>
+              <Text style={{ color: "black" }}>ETA: {e[0][1].duration.text}</Text>
+              <Text style={{ color: "black" }}>Approx Distance: {e[0][1].distance.text}</Text>
+              <Pressable
+              style={{
+                alignItems:'center',
+                backgroundColor: 'rgba(187, 255, 127, 0.9)'
+              }}
                 onPress={async () => {
                   console.log("sent2");
                   props.fetchRoute();
@@ -176,31 +191,115 @@ export default function NearbyPassengers(props) {
                       console.log(e);
                     });
                 }}
-              />
+              ><Text>Confirm Ride</Text></Pressable>
             </View>
           ))
         )}
-        <Button title="Search" onPress={fetchPassengers} />
-        <Button title="Stop Searching" onPress={props.hasStoppedRidefun} />
+        <View style={{ flex: 1 , alignItems: 'center', width: '95%',  margin: 10, marginTop: 25}}>
+              <Pressable style={{backgroundColor: 'rgba(187, 255, 127, 0.9)', 
+              borderWidth: 1,
+              borderColor: 'rgba(210, 210, 210, 0.9)',
+              width: Dimensions.get('window').width*0.45,
+              alignItems:'center',
+              height: Dimensions.get('window').height*0.05,
+              borderRadius: 10,
+              justifyContent: 'center',
+
+              }} onPress={fetchPassengers} ><Text style={{fontSize: 20}}>Search</Text></Pressable></View>
+              <View style={{ flex: 1 , alignItems: 'center', width: '95%',  margin: 10, marginTop: 25}}>
+              <Pressable style={{backgroundColor: 'rgba(187, 255, 127, 0.9)', 
+              borderWidth: 1,
+              borderColor: 'rgba(210, 210, 210, 0.9)',
+              width: Dimensions.get('window').width*0.55,
+              alignItems:'center',
+              height: Dimensions.get('window').height*0.05,
+              borderRadius: 10,
+              justifyContent: 'center',
+
+              }} onPress={props.hasStoppedRidefun} ><Text style={{fontSize: 20}}>Stop Searching</Text></Pressable></View>
+   
+
       </ScrollView>}
-      {confirmedpassengerinfo.passenger1info.length > 0 && <ScrollView>
-        <Text>name : {confirmedpassengerinfo.passenger1info[0].first_name} {confirmedpassengerinfo.passenger1info[1].last_name}</Text>
-        <Text>phone : {confirmedpassengerinfo.passenger1info[3].phone}</Text>
-        <Button title="complete ride" onPress={completeRide}/>
+      {confirmedpassengerinfo.passenger1info.length > 0 && !passenger1complete && <ScrollView>
+        <View
+        style={{backgroundColor:'white',
+        borderRadius: 20, borderWidth:1,
+         borderColor:'rgba(156, 156, 156, 0.9)',
+         padding: 10,
+         }}>
+        <Text>Name : {confirmedpassengerinfo.passenger1info[0].first_name} {confirmedpassengerinfo.passenger1info[1].last_name}</Text>
+        <Text>Phone Number : {confirmedpassengerinfo.passenger1info[3].phone}</Text>
+        </View>
+        <View style={{ flex: 1 , alignItems: 'center', width: '95%',  margin: 10, marginTop: 25}}>
+              <Pressable style={{backgroundColor: 'rgba(187, 255, 127, 0.9)', 
+              borderWidth: 1,
+              borderColor: 'rgba(210, 210, 210, 0.9)',
+              width: Dimensions.get('window').width*0.45,
+              alignItems:'center',
+              height: Dimensions.get('window').height*0.05,
+              borderRadius: 10,
+              justifyContent: 'center',
+
+              }} onPress={completeRide} ><Text style={{fontSize: 20}}>Complete Rides</Text></Pressable></View>
         
       </ScrollView>}
       {confirmedpassengerinfo.passenger2info.length > 0 && <ScrollView>
-        <Text>name : {confirmedpassengerinfo.passenger2info[0].first_name} {confirmedpassengerinfo.passenger2info[1].last_name}</Text>
-        <Text>phone : {confirmedpassengerinfo.passenger2info[3].phone}</Text>
-        <Button title="complete ride" onPress={completeRide}/>
+        <View
+        style={{backgroundColor:'white',
+        borderRadius: 20, borderWidth:1,
+         borderColor:'rgba(156, 156, 156, 0.9)',
+         padding: 10,
+         }}>
+        <Text>Name : {confirmedpassengerinfo.passenger2info[0].first_name} {confirmedpassengerinfo.passenger2info[1].last_name}</Text>
+        <Text>Phone Number : {confirmedpassengerinfo.passenger2info[3].phone}</Text>
+        </View>
+        <View style={{ flex: 1 , alignItems: 'center', width: '95%',  margin: 10, marginTop: 25}}>
+              <Pressable style={{backgroundColor: 'rgba(187, 255, 127, 0.9)', 
+              borderWidth: 1,
+              borderColor: 'rgba(210, 210, 210, 0.9)',
+              width: Dimensions.get('window').width*0.45,
+              alignItems:'center',
+              height: Dimensions.get('window').height*0.05,
+              borderRadius: 10,
+              justifyContent: 'center',
+
+              }} onPress={completeRide} ><Text style={{fontSize: 20}}>Complete Rides</Text></Pressable></View>
         
       </ScrollView> }
       {confirmedpassengerinfo.passenger3info.length > 0 && <ScrollView>
-        <Text>name : {confirmedpassengerinfo.passenger3info[0].first_name} {confirmedpassengerinfo.passenger3info[1].last_name}</Text>
-        <Text>phone : {confirmedpassengerinfo.passenger3info[3].phone}</Text>
-        <Button title="complete ride" onPress={completeRide}/>
+        <View
+        style={{backgroundColor:'white',
+        borderRadius: 20, borderWidth:1,
+         borderColor:'rgba(156, 156, 156, 0.9)',
+         padding: 10,
+         }}>
+        <Text>Name : {confirmedpassengerinfo.passenger3info[0].first_name} {confirmedpassengerinfo.passenger3info[1].last_name}</Text>
+        <Text>Phone Number : {confirmedpassengerinfo.passenger3info[3].phone}</Text>
+        </View>
+        <View style={{ flex: 1 , alignItems: 'center', width: '95%',  margin: 10, marginTop: 25}}>
+              <Pressable style={{backgroundColor: 'rgba(187, 255, 127, 0.9)', 
+              borderWidth: 1,
+              borderColor: 'rgba(210, 210, 210, 0.9)',
+              width: Dimensions.get('window').width*0.45,
+              alignItems:'center',
+              height: Dimensions.get('window').height*0.05,
+              borderRadius: 10,
+              justifyContent: 'center',
+
+              }} onPress={completeRide} ><Text style={{fontSize: 20}}>Complete Rides</Text></Pressable></View>
       </ScrollView> }
-      <Button title="complete ride" onPress={props.hasStoppedRidefun}/>
+      <View style={{ flex: 1 , alignItems: 'center', width: '95%',  margin: 10, marginTop: 25}}>
+              <Pressable style={{backgroundColor: 'rgba(187, 255, 127, 0.9)', 
+              borderWidth: 1,
+              borderColor: 'rgba(210, 210, 210, 0.9)',
+              width: Dimensions.get('window').width*0.45,
+              alignItems:'center',
+              height: Dimensions.get('window').height*0.05,
+              borderRadius: 10,
+              justifyContent: 'center',
+
+              }} onPress={props.hasStoppedRidefun} ><Text style={{fontSize: 20}}>Complete All Rides</Text></Pressable></View>
+      
     </View>
   );
 }

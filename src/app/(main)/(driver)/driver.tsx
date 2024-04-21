@@ -1,6 +1,6 @@
 import { Link, useNavigation } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Button, Text, View } from "react-native";
+import { Button, Dimensions, Pressable, Text, View } from "react-native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Location from "expo-location";
 import { ScrollView } from "react-native-virtualized-view";
@@ -13,8 +13,8 @@ import StartRide from "@/src/components/StartRide";
 import NearbyPassengers from "@/src/components/NearbyPassengers";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet from "@gorhom/bottom-sheet";
-import Sos from "@/src/components/sos";
 import auth from "@react-native-firebase/auth"
+import { StyleSheet } from "react-native";
 
 export default function DriverScreen() {
   const [state, setState] = useState({
@@ -68,7 +68,7 @@ export default function DriverScreen() {
   const handleClosePress = () => bottomSheetRef.current?.close();
   const handleMnimizePress = () => bottomSheetRef.current?.snapToIndex(0);
   const handleOpenPress = () => bottomSheetRef.current?.expand();
-  const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
+  const snapPoints = useMemo(() => ["25%", "40%", "75%", "100%"], []);
 
   const [name, setName] = useState("Current Location");
 
@@ -136,18 +136,25 @@ export default function DriverScreen() {
         
 
       />
-      <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
+      <BottomSheet 
+      ref={bottomSheetRef} 
+      index={1} 
+      snapPoints={snapPoints}
+      backgroundStyle={{backgroundColor:'rgba(242, 242, 242, 0.9)'}}>
         <ScrollView
-          style={{ backgroundColor: "white", flex: 1 }}
+          style={{ backgroundColor: "rgba(242, 242, 242, 0.9)", flex: 1, padding:Dimensions.get('window').width*0.05 }}
           keyboardShouldPersistTaps="handled"
         >
           {!hasStartedRide && (
-            <View style={{ flex: 1 }}>
+            <View>
+            <View style={{ flex: 1 , alignItems: 'center', width: '95%', margin: 10, marginBottom: 25}}>
+              <Text style={{alignItems: 'center', fontWeight:'500', fontSize:20, }}>Enter Destination</Text></View>
               <GooglePlacesAutocomplete
                 placeholder={name}
                 fetchDetails={true}
                 onPress={(data, detail) => {
                   fetchDestination(data, detail);
+                  bottomSheetRef.current?.snapToIndex(1);
                   setName(data.description);
                 }}
                 query={{
@@ -155,7 +162,18 @@ export default function DriverScreen() {
                   language: "en",
                 }}
               />
-              <Button title="Start" onPress={hasStartedRidefun} />
+              <View style={{ flex: 1 , alignItems: 'center', width: '95%',  margin: 10, marginTop: 25}}>
+              <Pressable style={{backgroundColor: 'rgba(187, 255, 127, 0.9)', 
+              borderWidth: 1,
+              borderColor: 'rgba(210, 210, 210, 0.9)',
+              width: Dimensions.get('window').width*0.45,
+              alignItems:'center',
+              height: Dimensions.get('window').height*0.05,
+              borderRadius: 10,
+              justifyContent: 'center',
+
+              }} onPress={hasStartedRidefun} ><Text style={{fontSize: 20}}>Start</Text></Pressable>
+            </View>
             </View>
           )}
           {hasStartedRide && (
@@ -165,9 +183,11 @@ export default function DriverScreen() {
               fetchRoute = {fetchRoute}
             />
           )}
-          <Sos />
         </ScrollView>
       </BottomSheet>
     </GestureHandlerRootView>
   );
 }
+const styles= StyleSheet.create({
+
+})

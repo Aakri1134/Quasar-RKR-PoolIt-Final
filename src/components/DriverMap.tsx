@@ -266,7 +266,7 @@ export default function DriverMap(props) {
 
   return (
     <View style={{ flex: 1, marginTop:40 }}>
-      <Button title="get info" onPress={getRouteInfo} />
+      <Button title="get info" onPress={getRouteInfo} color={'rgba(187, 255, 127, 0.9)' } />
       <MapView
         style={{ width: "100%", height: "100%", flex: 1 }}
         ref={mapRef}
